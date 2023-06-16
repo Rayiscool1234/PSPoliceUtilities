@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr34kyn01535.Uconomy;
 using PSRMPoliceUtilities.Models;
 using Rocket.API;
 using Rocket.Unturned.Player;
@@ -13,18 +12,18 @@ namespace PSRMPoliceUtilities.Commands.JailCommands
     {
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UnturnedPlayer unturnedPlayer = (UnturnedPlayer) caller;
+            UnturnedPlayer unturnedPlayer = (UnturnedPlayer)caller;
 
             var jailedPlayer = UnturnedPlayer.FromName(command[0]);
 
             if (command[0].Length < 1) jailedPlayer = unturnedPlayer;
 
-                if (jailedPlayer == null)
+            if (jailedPlayer == null)
             {
                 ChatManager.serverSendMessage($"Player does not exist.", Color.red, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, null, true);
                 return;
             }
-            
+
             JailTime jailedTime = new JailTime();
             if (!PSRMPoliceUtilities.Instance.JailTimeService.IsPlayerJailed(jailedPlayer.CSteamID.ToString(), out jailedTime)) return;
             if (jailedTime == null)
@@ -33,20 +32,20 @@ namespace PSRMPoliceUtilities.Commands.JailCommands
                 return;
             }
 
-            var currentCredits = Uconomy.Instance.Database.GetBalance(jailedPlayer.CSteamID.ToString());
-            var requiredCredits = PSRMPoliceUtilities.Instance.Configuration.Instance.CreditsPerMinute * (jailedTime.ExpireDate - DateTime.UtcNow).Minutes;
-            if (currentCredits < requiredCredits)
+            var currentExperience = jailedPlayer.Experience;
+            var requiredExperience = PSRMPoliceUtilities.Instance.Configuration.Instance.ExperiencePerMinute * (jailedTime.ExpireDate - DateTime.UtcNow).Minutes;
+            if (currentExperience < requiredExperience)
             {
-                ChatManager.serverSendMessage($"You need {requiredCredits} {Uconomy.Instance.Configuration.Instance.MoneyName}, but you only have {currentCredits} {Uconomy.Instance.Configuration.Instance.MoneyName}!", Color.red, null, null, EChatMode.GLOBAL, null, true);
+                ChatManager.serverSendMessage($"You need {requiredExperience} experience points, but you only have {currentExperience} experience points!", Color.red, null, null, EChatMode.GLOBAL, null, true);
                 return;
             }
 
-            Uconomy.Instance.Database.IncreaseBalance(unturnedPlayer.CSteamID.ToString(), -requiredCredits);
-            ChatManager.serverSendMessage($"You bailed {jailedPlayer.CharacterName} for {requiredCredits} {Uconomy.Instance.Configuration.Instance.DatabaseName}.", Color.red, null, null, EChatMode.GLOBAL, null, true);
+            jailedPlayer.Experience -= (uint)requiredExperience;
+            ChatManager.serverSendMessage($"You bailed {jailedPlayer.CharacterName} for {requiredExperience} experience points.", Color.red, null, null, EChatMode.GLOBAL, null, true);
 
             ChatManager.serverSendMessage($"{unturnedPlayer.CharacterName} bailed {jailedPlayer.CharacterName} from {jailedTime.JailName}", Color.blue, null, null, EChatMode.GLOBAL, null, true);
-            
-            jailedPlayer.Teleport(new Vector3(PSRMPoliceUtilities.Instance.Configuration.Instance.RelaseLocation.x, PSRMPoliceUtilities.Instance.Configuration.Instance.RelaseLocation.x, PSRMPoliceUtilities.Instance.Configuration.Instance.RelaseLocation.z), 0);
+
+            jailedPlayer.Teleport(new Vector3(PSRMPoliceUtilities.Instance.Configuration.Instance.ReleaseLocation.x, PSRMPoliceUtilities.Instance.Configuration.Instance.ReleaseLocation.y, PSRMPoliceUtilities.Instance.Configuration.Instance.ReleaseLocation.z), 0);
             PSRMPoliceUtilities.Instance.JailTimesDatabase.Data.Remove(jailedTime);
         }
 

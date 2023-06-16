@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr34kyn01535.Uconomy;
 using Rocket.API;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
@@ -11,7 +10,7 @@ namespace PSRMPoliceUtilities.Commands.Fine
     {
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            var player = (UnturnedPlayer) caller;
+            var player = (UnturnedPlayer)caller;
 
             var target = command.Length == 0 ? player : UnturnedPlayer.FromName(command[0]);
 
@@ -37,7 +36,7 @@ namespace PSRMPoliceUtilities.Commands.Fine
             for (int i = 0; i < Math.Min(4, activeFines.Count); i++)
             {
                 var fine = activeFines[i];
-                UnturnedChat.Say(player, PSRMPoliceUtilities.Instance.Translate("active_fine", target.CharacterName, fine.FinedDate, fine.FinedAmount, Uconomy.Instance.Configuration.Instance.MoneyName, fine.Reason, fine.CaseID));
+                UnturnedChat.Say(player, PSRMPoliceUtilities.Instance.Translate("active_fine", target.CharacterName, fine.FinedDate, fine.FinedAmount, "experience points", fine.Reason, fine.CaseID));
             }
         }
 

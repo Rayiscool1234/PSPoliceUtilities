@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using fr34kyn01535.Uconomy;
 using Rocket.API;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -9,15 +8,15 @@ using UnityEngine;
 
 namespace PSRMPoliceUtilities.Commands.Fine
 {
-    public class Fine : IRocketCommand
+    public class Fine : IRocketCommand // 
     {
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UnturnedPlayer unturnedPlayer = (UnturnedPlayer) caller;
+            UnturnedPlayer unturnedPlayer = (UnturnedPlayer)caller;
 
             var finedPlayer = UnturnedPlayer.FromName(command[0]);
             var fineReason = string.Join(" ", command.Skip(2));
-            
+
             if (command.Length <= 1)
             {
                 ChatManager.serverSendMessage($"Incorrect usage of command.", Color.red, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, null, true);
@@ -48,8 +47,8 @@ namespace PSRMPoliceUtilities.Commands.Fine
             }
 
             PSRMPoliceUtilities.Instance.FinesDatabase.FinePlayer(finedPlayer.CSteamID.ToString(), fineAmount, fineReason);
-            ChatManager.serverSendMessage($"[Case {PSRMPoliceUtilities.Instance.FinesDatabase.Collection.Count()}] {unturnedPlayer.CharacterName} for {fineAmount} {Uconomy.Instance.Configuration.Instance.MoneyName}.", Color.red, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, null, true);
-            ChatManager.serverSendMessage($"{unturnedPlayer.CharacterName} fined {finedPlayer.CharacterName} for {fineReason} for {fineAmount} {Uconomy.Instance.Configuration.Instance.MoneyName}!", Color.yellow, null, null, EChatMode.GLOBAL, null, true);
+            ChatManager.serverSendMessage($"[Case {PSRMPoliceUtilities.Instance.FinesDatabase.Collection.Count()}] {unturnedPlayer.CharacterName} fined for {fineAmount} experience points.", Color.red, null, unturnedPlayer.SteamPlayer(), EChatMode.SAY, null, true);
+            ChatManager.serverSendMessage($"{unturnedPlayer.CharacterName} fined {finedPlayer.CharacterName} for {fineReason} for {fineAmount} experience points!", Color.yellow, null, null, EChatMode.GLOBAL, null, true);
         }
 
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
